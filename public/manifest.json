@@ -3,19 +3,19 @@
   "name": "백준허브(BaekjoonHub)",
   "description": "Automatically integrate your BOJ submissions to GitHub",
   "homepage_url": "https://github.com/BaekjoonHub/BaekjoonHub",
-  "version": "1.1.9",
+  "version": "1.2.0",
   "author": "flaxinger",
   "action": {
-    "default_icon": "assets/thumbnail.png",
+    "default_icon": "icons/icon.png",
     "default_popup": "popup.html"
   },
   "icons": {
-    "16": "assets/thumbnail.png",
-    "48": "assets/thumbnail.png",
-    "128": "assets/thumbnail.png"
+    "16": "icons/icon.png",
+    "48": "icons/icon.png",
+    "128": "icons/icon.png"
   },
   "background": {
-    "service_worker": "scripts/background.js"
+    "service_worker": "background.js"
   },
   "declarative_net_request": {
     "rule_resources": [
@@ -59,8 +59,6 @@
         "https://github.com/*"
       ],
       "js": [
-        "scripts/util.js",
-        "scripts/Github.js",
         "scripts/authorize.js"
       ],
       "run_at": "document_idle"
@@ -73,20 +71,7 @@
         "css/baekjoon/inject.css"
       ],
       "js": [
-        "library/sha1.min.js",
-        "library/jszip.min.js",
-        "library/FileSaver.min.js",
-        "scripts/util.js",
-        "scripts/Github.js",
-        "scripts/authorize.js",
-        "scripts/storage.js",
-        "scripts/enable.js",
-        "scripts/baekjoon/variables.js",
-        "scripts/baekjoon/storage.js",
-        "scripts/baekjoon/parsing.js",
-        "scripts/baekjoon/util.js",
-        "scripts/baekjoon/uploadfunctions.js",
-        "scripts/baekjoon/baekjoon.js"
+        "baekjoon.js"
       ],
       "run_at": "document_idle"
     },
@@ -98,17 +83,7 @@
         "css/programmers/inject.css"
       ],
       "js": [
-        "library/sha1.min.js",
-        "scripts/util.js",
-        "scripts/Github.js",
-        "scripts/authorize.js",
-        "scripts/storage.js",
-        "scripts/enable.js",
-        "scripts/programmers/variables.js",
-        "scripts/programmers/util.js",
-        "scripts/programmers/parsing.js",
-        "scripts/programmers/uploadfunctions.js",
-        "scripts/programmers/programmers.js"
+        "programmers.js"
       ],
       "run_at": "document_idle"
     },
@@ -120,18 +95,7 @@
         "css/swexpertacademy/inject.css"
       ],
       "js": [
-        "library/sha1.min.js",
-        "scripts/util.js",
-        "scripts/Github.js",
-        "scripts/authorize.js",
-        "scripts/storage.js",
-        "scripts/enable.js",
-        "scripts/swexpertacademy/storage.js",
-        "scripts/swexpertacademy/variables.js",
-        "scripts/swexpertacademy/util.js",
-        "scripts/swexpertacademy/parsing.js",
-        "scripts/swexpertacademy/uploadfunctions.js",
-        "scripts/swexpertacademy/swexpertacademy.js"
+        "swexpertacademy.js"
       ],
       "run_at": "document_idle"
     }
