@@ -1,3 +1,11 @@
+import { isNull, isNotEmpty, calculateBlobSHA } from "./util";
+import {checkEnable} from "./enable";
+import { getStats, saveStats, getHook, getVersion, getStatsSHAfromPath, updateLocalStorageStats } from "./storage";
+
+import {parseCode, parseData} from "./swexpertacademy/parsing";
+import { getNickname, makeSubmitButton, startUpload, markUploadedCSS } from "./swexpertacademy/util";
+import { uploadOneSolveProblemOnGit } from "./swexpertacademy/uploadfunctions";
+
 // Set to true to enable console log
 const debug = false;
 

@@ -30,6 +30,7 @@ const oAuth2 = {
 
       chrome.tabs.create({ url, selected: true }, function () {
         window.close();
+        // eslint-disable-next-line no-unused-vars
         chrome.tabs.getCurrent(function (tab) {
           // chrome.tabs.remove(tab.id, function () {});
         });

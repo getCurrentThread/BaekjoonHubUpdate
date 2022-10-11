@@ -1,12 +1,16 @@
+import { isNull, getVersion } from "./util";
+import GitHub from "./GitHub";
+
 /* Sync to local storage */
 chrome.storage.local.get('isSync', (data) => {
-  keys = ['BaekjoonHub_token', 'BaekjoonHub_username', 'pipe_baekjoonhub', 'stats', 'BaekjoonHub_hook', 'mode_type'];
+  const keys = ['BaekjoonHub_token', 'BaekjoonHub_username', 'pipe_baekjoonhub', 'stats', 'BaekjoonHub_hook', 'mode_type'];
   if (!data || !data.isSync) {
     keys.forEach((key) => {
       chrome.storage.sync.get(key, (data) => {
         chrome.storage.local.set({ [key]: data[key] });
       });
     });
+    // eslint-disable-next-line no-unused-vars
     chrome.storage.local.set({ isSync: true }, (data) => {
       // if (debug)
       console.log('BaekjoonHub Synced to local values');
@@ -37,7 +41,7 @@ getStats().then((stats) => {
  * Chrome의 Local StorageArea에서 개체 가져오기
  * @param {string} key
  */
-async function getObjectFromLocalStorage(key) {
+export async function getObjectFromLocalStorage(key) {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.local.get(key, function (value) {
@@ -54,7 +58,7 @@ async function getObjectFromLocalStorage(key) {
  * Chrome의 Local StorageArea에 개체 저장
  * @param {*} obj
  */
-async function saveObjectInLocalStorage(obj) {
+export async function saveObjectInLocalStorage(obj) {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.local.set(obj, function () {
@@ -72,7 +76,7 @@ async function saveObjectInLocalStorage(obj) {
  *
  * @param {string or array of string keys} keys
  */
-async function removeObjectFromLocalStorage(keys) {
+ export async function removeObjectFromLocalStorage(keys) {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.local.remove(keys, function () {
@@ -88,7 +92,7 @@ async function removeObjectFromLocalStorage(keys) {
  * Chrome의 Sync StorageArea에서 개체 가져오기
  * @param {string} key
  */
-async function getObjectFromSyncStorage(key) {
+ export async function getObjectFromSyncStorage(key) {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.sync.get(key, function (value) {
@@ -104,7 +108,7 @@ async function getObjectFromSyncStorage(key) {
  * Chrome의 Sync StorageArea에 개체 저장
  * @param {*} obj
  */
-async function saveObjectInSyncStorage(obj) {
+ export async function saveObjectInSyncStorage(obj) {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.sync.set(obj, function () {
@@ -120,7 +124,7 @@ async function saveObjectInSyncStorage(obj) {
  * Chrome Sync StorageArea에서 개체 제거
  * @param {string or array of string keys} keys
  */
-async function removeObjectFromSyncStorage(keys) {
+ export async function removeObjectFromSyncStorage(keys) {
   return new Promise((resolve, reject) => {
     try {
       chrome.storage.sync.remove(keys, function () {
@@ -132,35 +136,35 @@ async function removeObjectFromSyncStorage(keys) {
   });
 }
 
-async function getToken() {
+export async function getToken() {
   return await getObjectFromLocalStorage('BaekjoonHub_token');
 }
 
-// async function getPipe() {
+// export async function getPipe() {
 //   return await getObjectFromLocalStorage('pipe_baekjoonhub');
 // }
 
-async function getGithubUsername() {
+export async function getGithubUsername() {
   return await getObjectFromLocalStorage('BaekjoonHub_username');
 }
 
-async function getStats() {
+export async function getStats() {
   return await getObjectFromLocalStorage('stats');
 }
 
-async function getHook() {
+export async function getHook() {
   return await getObjectFromLocalStorage('BaekjoonHub_hook');
 }
 
-async function getModeType() {
+export async function getModeType() {
   return await getObjectFromLocalStorage('mode_type');
 }
 
-async function saveToken(token) {
+export async function saveToken(token) {
   return await saveObjectInLocalStorage({ BaekjoonHub_token: token });
 }
 
-async function saveStats(stats) {
+export async function saveStats(stats) {
   return await saveObjectInLocalStorage({ stats });
 }
 
@@ -173,13 +177,13 @@ async function saveStats(stats) {
  * @param {string} sha - sha of file
  * @returns {Promise<void>}
  */
-async function updateStatsSHAfromPath(path, sha) {
+ export async function updateStatsSHAfromPath(path, sha) {
   const stats = await getStats();
   updateObjectDatafromPath(stats.submission, path, sha);
   await saveStats(stats);
 }
 
-function updateObjectDatafromPath(obj, path, data) {
+export function updateObjectDatafromPath(obj, path, data) {
   let current = obj;
   // split path into array and filter out empty strings
   const pathArray = _swexpertacademyRankRemoveFilter(_baekjoonSpaceRemoverFilter(_programmersRankRemoverFilter(_baekjoonRankRemoverFilter(path))))
@@ -199,12 +203,12 @@ function updateObjectDatafromPath(obj, path, data) {
  * @param {string} path - path to file
  * @returns {Promise<string>} - sha of file
  */
-async function getStatsSHAfromPath(path) {
+ export async function getStatsSHAfromPath(path) {
   const stats = await getStats();
   return getObjectDatafromPath(stats.submission, path);
 }
 
-function getObjectDatafromPath(obj, path) {
+export function getObjectDatafromPath(obj, path) {
   let current = obj;
   const pathArray = _swexpertacademyRankRemoveFilter(_baekjoonSpaceRemoverFilter(_programmersRankRemoverFilter(_baekjoonRankRemoverFilter(path))))
     .split('/')
@@ -219,7 +223,7 @@ function getObjectDatafromPath(obj, path) {
 }
 
 /* github repo에 있는 모든 파일 목록을 가져와서 stats 갱신 */
-async function updateLocalStorageStats() {
+export async function updateLocalStorageStats() {
   const hook = await getHook();
   const token = await getToken();
   const git = new GitHub(hook, token);
@@ -275,6 +279,7 @@ function _programmersRankRemoverFilter(path) {
  * @returns {string} - 공백과 관련된 값을 제거한 문자열
  */
 function _baekjoonSpaceRemoverFilter(path) {
+  // eslint-disable-next-line no-irregular-whitespace
   return path.replace(/( | |&nbsp|&#160|&#8197|%E2%80%85|%20)/g, '');
 }
 

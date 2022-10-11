@@ -1,3 +1,6 @@
+import { isNull } from "../util";
+import { getStats, saveStats } from "../storage";
+
 /* eslint-disable no-unused-vars */
 class TTLCacheStats {
   constructor(name) {
@@ -89,11 +92,11 @@ class TTLCacheStats {
   }
 }
 
-const problemCache = new TTLCacheStats('problem');
-const submitCodeCache = new TTLCacheStats('scode');
-const SolvedACCache = new TTLCacheStats('solvedac');
+export const problemCache = new TTLCacheStats('problem');
+export const submitCodeCache = new TTLCacheStats('scode');
+export const SolvedACCache = new TTLCacheStats('solvedac');
 
-async function updateProblemsFromStats(problem) {
+export async function updateProblemsFromStats(problem) {
   const data = {
     id: problem.problemId,
     problem_description: problem.problem_description,
@@ -103,11 +106,11 @@ async function updateProblemsFromStats(problem) {
   await problemCache.update(data);
 }
 
-async function getProblemFromStats(problemId) {
+export async function getProblemFromStats(problemId) {
   return problemCache.get(problemId);
 }
 
-async function updateSubmitCodeFromStats(obj) {
+export async function updateSubmitCodeFromStats(obj) {
   const data = {
     id: obj.submissionId,
     data: obj.code,
@@ -115,11 +118,11 @@ async function updateSubmitCodeFromStats(obj) {
   await submitCodeCache.update(data);
 }
 
-async function getSubmitCodeFromStats(submissionId) {
+export async function getSubmitCodeFromStats(submissionId) {
   return submitCodeCache.get(submissionId).then((x) => x?.data);
 }
 
-async function updateSolvedACFromStats(obj) {
+export async function updateSolvedACFromStats(obj) {
   const data = {
     id: obj.problemId,
     data: obj.jsonData,
@@ -127,6 +130,6 @@ async function updateSolvedACFromStats(obj) {
   await SolvedACCache.update(data);
 }
 
-async function getSolvedACFromStats(problemId) {
+export async function getSolvedACFromStats(problemId) {
   return SolvedACCache.get(problemId).then((x) => x?.data);
 }

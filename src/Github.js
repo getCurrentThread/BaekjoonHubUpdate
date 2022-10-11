@@ -1,4 +1,6 @@
-class GitHub {
+import { b64EncodeUnicode } from "./util";
+
+export class GitHub {
   constructor(hook, token) {
     if (debug) console.log('GitHub constructor', hook, token);
     this.update(hook, token);

@@ -22,6 +22,7 @@ function handleMessage(request) {
     /* Go to onboarding for UX */
     const urlOnboarding = `chrome-extension://${chrome.runtime.id}/welcome.html`;
     chrome.tabs.create({ url: urlOnboarding, selected: true }); // creates new tab
+  // eslint-disable-next-line no-dupe-else-if
   } else if (request && request.closeWebPage === true && request.isSuccess === true) {
     alert('Something went wrong while trying to authenticate your profile!');
     chrome.tabs.getSelected(null, function (tab) {

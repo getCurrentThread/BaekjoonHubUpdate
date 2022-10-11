@@ -1,7 +1,9 @@
+import { uploadState } from "./variables";
+import { isNull } from "../util";
 /**
  * 로딩 버튼 추가
  */
-function startUpload() {
+export function startUpload() {
   let elem = document.getElementById('BaekjoonHub_progress_anchor_element');
   if (elem !== undefined) {
     elem = document.createElement('span');
@@ -21,7 +23,7 @@ function startUpload() {
 /**
  * 업로드 완료 아이콘 표시
  */
-function markUploadedCSS() {
+ export function markUploadedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploaded';
@@ -30,7 +32,7 @@ function markUploadedCSS() {
 /**
  * 업로드 실패 아이콘 표시
  */
-function markUploadFailedCSS() {
+ export function markUploadFailedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploadfailed';
@@ -39,7 +41,7 @@ function markUploadFailedCSS() {
 /**
  * 총 실행시간이 10초를 초과한다면 실패로 간주합니다.
  */
-function startUploadCountDown() {
+ export function startUploadCountDown() {
   uploadState.uploading = true;
   uploadState.countdown = setTimeout(() => {
     if (uploadState.uploading === true) {

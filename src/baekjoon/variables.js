@@ -11,7 +11,7 @@
 
 // prettier-ignore
 // Languages supported by BOJ
-/* let */ const languages = {
+/* let */ export const languages = {
     "아희": "aheui",
     "엄준식": "umm",
     "Ada": "ada",
@@ -142,7 +142,7 @@
 // console.log("languages: ", languages);
 
 // BOJ Levels
-const bj_level = {
+export const bj_level = {
   0: 'Unrated',
   1: 'Bronze V',
   2: 'Bronze IV',
@@ -178,7 +178,7 @@ const bj_level = {
 };
 
 // prettier-ignore
-/* let */ const categories = {
+/* let */ export const categories = {
     "0_1_bfs": "0-1 너비 우선 탐색",
     "2_sat": "2-sat",
     "a_star": "a*",
@@ -397,7 +397,7 @@ const bj_level = {
 // console.log('categories: ', categories);
 
 /* 채점 결과에 대한 각 구분 정보 */
-const RESULT_CATEGORY = {
+export const RESULT_CATEGORY = {
   RESULT_PENDING: 'wait',
   RESULT_PENDING_REJUDGE: 'rejudge-wait',
   RESULT_NO_JUDGE: 'no-judge',
@@ -418,7 +418,7 @@ const RESULT_CATEGORY = {
 };
 
 /* 채점 결과에 대한 각 메시지 구분 맵핑 */
-const RESULT_MESSAGE = {
+export const RESULT_MESSAGE = {
   [RESULT_CATEGORY.RESULT_PENDING]: '기다리는 중',
   [RESULT_CATEGORY.RESULT_PENDING_REJUDGE]: '재채점을 기다리는 중',
   [RESULT_CATEGORY.RESULT_NO_JUDGE]: '채점하지 않음',
@@ -436,9 +436,9 @@ const RESULT_MESSAGE = {
 };
 
 /* state of upload for progress */
-const uploadState = { uploading: false };
+export const uploadState = { uploading: false };
 
-const multiloader = {
+export const multiloader = {
   wrap: null,
   nom: null,
   denom: null,

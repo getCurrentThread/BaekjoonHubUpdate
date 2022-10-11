@@ -87,7 +87,7 @@ function get_levels() {
 get_levels();
 */
 
-const levels = {
+export const levels = {
   1829: 'lv2',
   1830: 'lv3',
   1831: 'lv4',
@@ -346,4 +346,4 @@ const levels = {
 };
 
 /* state of upload for progress */
-const uploadState = { uploading: false };
+export const uploadState = { uploading: false };

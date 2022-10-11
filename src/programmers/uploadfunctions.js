@@ -1,3 +1,7 @@
+import {GitHub} from "../Github";
+import {isNull} from "../util";
+import {getToken, getHook, updateObjectDatafromPath, saveStats, getStats} from "../storage";
+
 /** 푼 문제들에 대한 단일 업로드는 uploadGit 함수로 합니다.
  * 파라미터는 아래와 같습니다.
  * @param {string} filePath - 업로드할 파일의 경로
@@ -8,7 +12,7 @@
  * @param {function} cb - 콜백 함수 (ex. 업로드 후 로딩 아이콘 처리 등)
  * @returns {Promise<void>}
  */
-async function uploadOneSolveProblemOnGit(bojData, cb) {
+export async function uploadOneSolveProblemOnGit(bojData, cb) {
   const token = await getToken();
   const hook = await getHook();
   if (isNull(token) || isNull(hook)) {
@@ -29,7 +33,7 @@ async function uploadOneSolveProblemOnGit(bojData, cb) {
  * @param {string} commitMessage - 커밋 메시지
  * @param {function} cb - 콜백 함수 (ex. 업로드 후 로딩 아이콘 처리 등)
  */
-async function upload(token, hook, sourceText, readmeText, directory, filename, commitMessage, cb) {
+export async function upload(token, hook, sourceText, readmeText, directory, filename, commitMessage, cb) {
   /* 업로드 후 커밋 */
   const git = new GitHub(hook, token);
   const stats = await getStats();

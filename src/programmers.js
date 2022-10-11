@@ -1,3 +1,9 @@
+import { isNull, isNotEmpty, getVersion, calculateBlobSHA } from "./util";
+import { getStats, getHook, saveStats, getStatsSHAfromPath, updateLocalStorageStats } from "./storage";
+import { parseData } from "./programmers/parsing";
+import { startUpload, markUploadedCSS } from "./programmers/util";
+import { uploadOneSolveProblemOnGit } from "./programmers/uploadfunctions";
+import { checkEnable } from "./enable";
 // Set to true to enable console log
 const debug = false;
 
@@ -76,10 +82,3 @@ async function versionUpdate() {
   await saveStats(stats);
   if (debug) console.log('stats updated.', stats);
 }
-
-// /* TODO: 하나의 데이터만 가져오는 구조이므로 page를 계속적으로
-//   아래 있는 네이베이션바의 "다음"버튼이 비활성화 될때까지 반복으로 진행한다.
-//   진행하며 존재하는 알고리즘 카드인 div.col-item > div.card-algorithm > a 의 href 속성값을 가져와 리스트화하고,
-//   이를 차후 fetch GET를 진행하여 작성한 알고리즘을 가져와 github에 업로드를 진행한다.
-//   */
-// function get_all_problems() {}

@@ -1,8 +1,11 @@
+import { sha1 } from "sha1";
+
 /**
  *현재 익스텐션의 버전정보를 반환합니다.
  * @returns {string} - 현재 익스텐션의 버전정보
  */
-function getVersion() {
+ export function getVersion() {
+  // eslint-disable-next-line no-undef
   return chrome.runtime.getManifest().version;
 }
 
@@ -10,7 +13,8 @@ function getVersion() {
  * @param {DOMElement} element - 존재하는지 확인할 element
  * @returns {boolean} - 존재하면 true, 존재하지 않으면 false
  */
-function elementExists(element) {
+ export function elementExists(element) {
+  // eslint-disable-next-line no-prototype-builtins
   return element !== undefined && element !== null && element.hasOwnProperty('length') && element.length > 0;
 }
 
@@ -19,7 +23,7 @@ function elementExists(element) {
  * @param {any} value - 체크할 값
  * @returns {boolean} - null이면 true, null이 아니면 false
  */
-function isNull(value) {
+ export function isNull(value) {
   return value === null || value === undefined;
 }
 
@@ -28,7 +32,8 @@ function isNull(value) {
  * @param {any} value - 체크할 값
  * @returns {boolean} - 비어있으면 true, 비어있지 않으면 false
  */
-function isEmpty(value) {
+ export function isEmpty(value) {
+  // eslint-disable-next-line no-prototype-builtins
   return isNull(value) || (value.hasOwnProperty('length') && value.length === 0);
 }
 
@@ -37,11 +42,12 @@ function isEmpty(value) {
  * @param {any} obj - 체크할 객체 또는 배열
  * @returns {boolean} - 비어있지 않으면 true, 비어있으면 false
  */
-function isNotEmpty(obj) {
+ export function isNotEmpty(obj) {
   if (isEmpty(obj)) return false;
   if (typeof obj !== 'object') return true;
   if (obj.length === 0) return false;
   for (const key in obj) {
+    // eslint-disable-next-line no-prototype-builtins
     if (obj.hasOwnProperty(key)) {
       if (!isNotEmpty(obj[key])) return false;
     }
@@ -53,7 +59,7 @@ function isNotEmpty(obj) {
  * @param {string} text - escape 할 문자열
  * @returns {string} - escape된 문자열
  */
-function escapeHtml(text) {
+ export function escapeHtml(text) {
   const map = {
     '&': '&amp;',
     '<': '&lt;',
@@ -77,7 +83,7 @@ String.prototype.escapeHtml = function () {
  * @param {string} text - unescape할 문자열
  * @returns {string} - unescape된 문자열
  */
-function unescapeHtml(text) {
+ export function unescapeHtml(text) {
   const unescaped = {
     '&amp;': '&',
     '&#38;': '&',
@@ -106,7 +112,7 @@ String.prototype.unescapeHtml = function () {
  * @param {string} text - 변환할 문자열
  * @returns {string} - 전각문자로 변환된 문자열
  */
-function convertSingleCharToDoubleChar(text) {
+export function convertSingleCharToDoubleChar(text) {
   // singleChar to doubleChar mapping
   const map = {
     '!': '！',
@@ -139,6 +145,7 @@ function convertSingleCharToDoubleChar(text) {
     '~': '～',
     ' ': ' ', // 공백만 전각문자가 아닌 FOUR-PER-EM SPACE로 변환
   };
+  // eslint-disable-next-line no-useless-escape
   return text.replace(/[!%&()*+,\-./:;<=>?@\[\\\]^_`{|}~ ]/g, function (m) {
     return map[m];
   });
@@ -149,7 +156,7 @@ function convertSingleCharToDoubleChar(text) {
  * @param {string} str - base64로 인코딩할 문자열
  * @returns {string} - base64로 인코딩된 문자열
  */
-function b64EncodeUnicode(str) {
+export function b64EncodeUnicode(str) {
   return btoa(
     encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
       return String.fromCharCode(`0x${p1}`);
@@ -162,7 +169,7 @@ function b64EncodeUnicode(str) {
  * @param {string} b64str - base64로 인코딩된 문자열
  * @returns {string} - base64로 디코딩된 문자열
  */
-function b64DecodeUnicode(b64str) {
+export function b64DecodeUnicode(b64str) {
   return decodeURIComponent(
     atob(b64str)
       .split('')
@@ -178,7 +185,7 @@ function b64DecodeUnicode(b64str) {
  * @param {string} key - key to sort
  * @returns {object} - key 기준으로 그룹핑된 객체들 배열을 value로 갖는 map
  */
-function groupBy(array, key) {
+export function groupBy(array, key) {
   return array.reduce(function (rv, x) {
     (rv[x[key]] = rv[x[key]] || []).push(x);
     return rv;
@@ -192,9 +199,10 @@ function groupBy(array, key) {
  * @param compare: 비교할 함수
  * @returns {array<object>} : 같은 key 그룹 내의 요소 중 최고의 값을 반환합니다.
  * */
-function maxValuesGroupBykey(arr, key, compare) {
+export function maxValuesGroupBykey(arr, key, compare) {
   const map = groupBy(arr, key);
   const result = [];
+  // eslint-disable-next-line no-unused-vars
   for (const [key, value] of Object.entries(map)) {
     const maxValue = value.reduce((max, current) => {
       return compare(max, current) > 0 ? max : current;
@@ -210,17 +218,16 @@ function maxValuesGroupBykey(arr, key, compare) {
  * @param {string} val - value to filter
  * @returns {array} - filtered array
  */
-function filter(arr, key, val) {
+export function filter(arr, key, val) {
   return arr.filter(function (item) {
     return val.includes(item[key]);
   });
 }
-
 /** calculate github blob file SHA
  * @param {string} content - file content
  * @returns {string} - SHA hash
  */
-function calculateBlobSHA(content) {
+ export function calculateBlobSHA(content) {
   return sha1(`blob ${new Blob([content]).size}\0${content}`);
 }
 
@@ -231,7 +238,7 @@ function calculateBlobSHA(content) {
  * @param {function} iteratorFn - iterator function
  * @returns {array} - processed array
 */
-async function asyncPool(poolLimit, array, iteratorFn) {
+export async function asyncPool(poolLimit, array, iteratorFn) {
   const ret = [];
   const executing = [];
   for (const item of array) {
@@ -256,6 +263,6 @@ async function asyncPool(poolLimit, array, iteratorFn) {
  * @param {array<Object>} b
  * @return {array<Object>}
 */
-function combine(a, b) {
+export function combine(a, b) {
   return a.map((x, i) => Object.assign({}, x, b[i]));
 }

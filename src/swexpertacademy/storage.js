@@ -1,3 +1,6 @@
+import { isNull } from "../util";
+import {getObjectFromLocalStorage, saveObjectInLocalStorage} from "../storage"
+
 /*
     로컬스토리지에 swea 객체가 없는 경우 생성
 */
@@ -12,7 +15,7 @@ getObjectFromLocalStorage('swea').then((data) => {
  * @param {string} problemId 문제 번호
  * @param {object} obj 저장할 추가 내용
  */
-async function updateProblemData(problemId, obj) {
+export async function updateProblemData(problemId, obj) {
   return getObjectFromLocalStorage('swea').then((data) => {
     if (debug) console.log('updateProblemData', data);
     if (debug) console.log('obj', obj);
@@ -44,6 +47,6 @@ async function updateProblemData(problemId, obj) {
  * @param {string} problemId 문제 번호
  * @returns {object} 문제 내 데이터
  */
-async function getProblemData(problemId) {
+export async function getProblemData(problemId) {
   return getObjectFromLocalStorage('swea').then((data) => data[problemId]);
 }

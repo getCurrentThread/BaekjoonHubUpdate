@@ -1,7 +1,10 @@
+import { isNull, maxValuesGroupBykey,  } from "../util";
+import { uploadState,multiloader } from "./variables";
+import { downloadAllSolvedProblem, uploadAllSolvedProblem } from "./uploadfunctions"
 /**
  * 로딩 버튼 추가
  */
-function startUpload() {
+ export function startUpload() {
   let elem = document.getElementById('BaekjoonHub_progress_anchor_element');
   if (elem !== undefined) {
     elem = document.createElement('span');
@@ -21,7 +24,7 @@ function startUpload() {
 /**
  * 업로드 완료 아이콘 표시
  */
-function markUploadedCSS() {
+ export function markUploadedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploaded';
@@ -34,7 +37,7 @@ function markUploadedCSS() {
 /**
  * 업로드 실패 아이콘 표시
  */
-function markUploadFailedCSS() {
+ export function markUploadFailedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploadfailed';
@@ -43,7 +46,7 @@ function markUploadFailedCSS() {
 /**
  * 총 실행시간이 10초를 초과한다면 실패로 간주합니다.
  */
-function startUploadCountDown() {
+ export function startUploadCountDown() {
   uploadState.uploading = true;
   uploadState.countdown = setTimeout(() => {
     if (uploadState.uploading === true) {
@@ -62,7 +65,7 @@ function startUploadCountDown() {
  * 3. 코드길이(codeLength)의 차이가 있을 경우 그 차이 값을 반환합니다.
  * 4. 위의 요소가 모두 같은 경우 제출한 요소(submissionId)의 그 차이 값의 역을 반환합니다.
  * */
-function compareSubmission(a, b) {
+ export function compareSubmission(a, b) {
   // prettier-ignore-start
   /* eslint-disable */
   return a.runtime === b.runtime
@@ -82,12 +85,12 @@ function compareSubmission(a, b) {
  * @param {array} submissions - 제출 목록 배열
  * @returns {array} - 목록 중 문제별로 최고의 성능 제출 내역을 담은 배열
  */
-function selectBestSubmissionList(submissions) {
+ export function selectBestSubmissionList(submissions) {
   if (isNull(submissions) || submissions.length === 0) return [];
   return maxValuesGroupBykey(submissions, 'problemId', (a, b) => -compareSubmission(a, b));
 }
 
-function convertResultTableHeader(header) {
+export function convertResultTableHeader(header) {
   switch (header) {
     case '문제번호':
     case '문제':
@@ -118,7 +121,7 @@ function convertResultTableHeader(header) {
   }
 }
 
-function insertUploadAllButton() {
+export function insertUploadAllButton() {
   const profileNav = document.getElementsByClassName('nav-tabs')[0];
   if (debug) console.log('profileNav', profileNav);
   const uploadButton = document.createElement('li');
@@ -132,7 +135,7 @@ function insertUploadAllButton() {
   };
 }
 
-function insertDownloadAllButton() {
+export function insertDownloadAllButton() {
   // 2500 솔 이하일 때 표시하지 않음
   // if (+document.getElementById('u-solved').innerText <= 2500) return;
 
@@ -149,7 +152,7 @@ function insertDownloadAllButton() {
   };
 }
 
-function insertMultiLoader() {
+export function insertMultiLoader() {
   multiloader.wrap = document.createElement('div');
   multiloader.wrap.classList.add('BJH_loading_wrap');
 
@@ -171,19 +174,19 @@ function insertMultiLoader() {
   return multiloader.wrap;
 }
 
-function setMultiLoaderDenom(num) {
+export function setMultiLoaderDenom(num) {
   multiloader.denom.innerText = num;
 }
 
-function incMultiLoader(num) {
+export function incMultiLoader(num) {
   multiloader.nom.innerText = +multiloader.nom.innerText + num;
 }
 
-function MultiloaderUpToDate() {
+export function MultiloaderUpToDate() {
   multiloader.wrap.innerHTML = 'Up To Date';
 }
 
-function convertImageTagAbsoluteURL(doc = document) {
+export function convertImageTagAbsoluteURL(doc = document) {
   if(isNull(doc)) return;
   // img tag replace Relative URL to Absolute URL.
   Array.from(doc.getElementsByTagName('img'), (x) => {

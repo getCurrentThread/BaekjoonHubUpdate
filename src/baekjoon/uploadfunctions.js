@@ -1,3 +1,12 @@
+import { isNull, isEmpty, calculateBlobSHA } from "../util";
+import {getToken, getHook, getObjectDatafromPath, updateObjectDatafromPath, saveStats, getStats, updateLocalStorageStats} from "../storage";
+import { GitHub } from "../Github";
+import {findUsername, findUniqueResultTableListByUsername, incMultiLoader, MultiloaderUpToDate, setMultiLoaderDenom} from "./util";
+import {findDatas} from "./parsing";
+import asyncPool from "tiny-async-pool";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+
 /** 푼 문제들에 대한 단일 업로드는 uploadGit 함수로 합니다.
  * 파라미터는 아래와 같습니다.
  * @param {string} filePath - 업로드할 파일의 경로
@@ -8,7 +17,7 @@
  * @param {function} cb - 콜백 함수 (ex. 업로드 후 로딩 아이콘 처리 등)
  * @returns {Promise<void>}
  */
-async function uploadOneSolveProblemOnGit(bojData, cb) {
+export async function uploadOneSolveProblemOnGit(bojData, cb) {
   const token = await getToken();
   const hook = await getHook();
   if (isNull(token) || isNull(hook)) {
@@ -29,7 +38,7 @@ async function uploadOneSolveProblemOnGit(bojData, cb) {
  * @param {string} commitMessage - 커밋 메시지
  * @param {function} cb - 콜백 함수 (ex. 업로드 후 로딩 아이콘 처리 등)
  */
-async function upload(token, hook, sourceText, readmeText, directory, filename, commitMessage, cb) {
+ export async function upload(token, hook, sourceText, readmeText, directory, filename, commitMessage, cb) {
   /* 업로드 후 커밋 */
   const git = new GitHub(hook, token);
   const stats = await getStats();
@@ -54,7 +63,7 @@ async function upload(token, hook, sourceText, readmeText, directory, filename, 
 }
 
 /* 모든 코드를 github에 업로드하는 함수 */
-async function uploadAllSolvedProblem() {
+export async function uploadAllSolvedProblem() {
   const tree_items = [];
 
   // 업로드된 모든 파일에 대한 SHA 업데이트
@@ -120,7 +129,7 @@ async function uploadAllSolvedProblem() {
 }
 
 /* 모든 코드를 zip 파일로 저장하는 함수 */
-async function downloadAllSolvedProblem() {
+export async function downloadAllSolvedProblem() {
   const zip = new JSZip();
   await findUniqueResultTableListByUsername(findUsername())
     .then((list) => {
@@ -137,11 +146,13 @@ async function downloadAllSolvedProblem() {
         );
       });
     })
+    // eslint-disable-next-line no-unused-vars
     .then((_) =>
       zip.generateAsync({ type: 'blob' }).then((content) => {
         saveAs(content, 'all_solved_problem.zip');
       }),
     )
+    // eslint-disable-next-line no-unused-vars
     .then((_) => {
       if (debug) console.log('전체 코드 다운로드 완료');
       incMultiLoader(1);

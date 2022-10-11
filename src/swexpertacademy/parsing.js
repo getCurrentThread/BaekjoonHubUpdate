@@ -1,7 +1,12 @@
+import {isNull, convertSingleCharToDoubleChar} from "../util";
+import {languages} from "./variables";
+import {getNickname} from "./util"
+import {updateProblemData, getProblemData} from "./storage"
+
 /**
  * 문제를 정상적으로 풀면 제출한 소스코드를 파싱하고, 로컬스토리지에 저장하는 함수입니다.
  */
-async function parseCode() {
+export async function parseCode() {
   const problemId = document.querySelector('div.problem_box > h3').innerText.replace(/\..*$/, '').trim();
   const contestProbId = [...document.querySelectorAll('#contestProbId')].slice(-1)[0].value;
   updateTextSourceEvent();
@@ -13,7 +18,7 @@ async function parseCode() {
 /*
   cEditor 소스코드의 정보를 textSource에 저장하도록 하는 함수 입니다. 
 */
-function updateTextSourceEvent() {
+export function updateTextSourceEvent() {
   document.documentElement.setAttribute('onreset', 'cEditor.save();');
   document.documentElement.dispatchEvent(new CustomEvent('reset'));
   document.documentElement.removeAttribute('onreset');
@@ -27,7 +32,7 @@ function updateTextSourceEvent() {
   - readme : README.md에 작성할 내용
   - code : 소스코드 내용
 */
-async function parseData() {
+export async function parseData() {
   const nickname = document.querySelector('#searchinput').value;
 
   if (debug) console.log('사용자 로그인 정보 및 유무 체크', nickname, document.querySelector('#problemForm div.info'));
@@ -79,8 +84,9 @@ async function parseData() {
   return makeData({ link, problemId, level, title, extension, code, runtime, memory, length });
 }
 
-async function makeData(origin) {
+export async function makeData(origin) {
   const { link, problemId, level, extension, title, runtime, memory, code, length } = origin;
+  // eslint-disable-next-line no-irregular-whitespace
   const directory = `SWEA/${level}/${problemId}. ${convertSingleCharToDoubleChar(title)}`;
   const message = `[${level}] Title: ${title}, Time: ${runtime}, Memory: ${memory} -BaekjoonHub`;
   const fileName = `${convertSingleCharToDoubleChar(title)}.${extension}`;

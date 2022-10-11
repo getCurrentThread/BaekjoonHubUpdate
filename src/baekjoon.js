@@ -1,3 +1,11 @@
+import { findData, findUsername, parseProblemDescription, findUsernameOnUserInfoPage, isExistResultTable, findFromResultTable } from "./baekjoon/parsing";
+import { insertUploadAllButton, insertDownloadAllButton, markUploadedCSS, startUpload } from "./baekjoon/util";
+import { RESULT_CATEGORY } from "./baekjoon/variables";
+import { uploadOneSolveProblemOnGit } from "./baekjoon/uploadfunctions";
+import { isNull, isEmpty, getVersion, isNotEmpty, calculateBlobSHA, getStatsSHAfromPath } from "./util";
+import { getStats, saveStats, getHook, updateLocalStorageStats } from "./storage";
+import { checkEnable } from "./enable";
+
 // Set to true to enable console log
 const debug = false;
 
@@ -14,8 +22,14 @@ if (debug) console.log(currentUrl);
 // 백준 사이트 로그인 상태이면 username이 있으며, 아니면 없다.
 const username = findUsername();
 if (!isNull(username)) {
-  if (['status', `user_id=${username}`, 'problem_id', 'from_mine=1'].every((key) => currentUrl.includes(key))) startLoader();
-  else if (currentUrl.match(/\.net\/problem\/\d+/) !== null) parseProblemDescription();
+  if (
+    ['status', `user_id=${username}`, 'problem_id', 'from_mine=1'].every(
+      (key) => currentUrl.includes(key),
+    )
+  )
+    startLoader();
+  else if (currentUrl.match(/\.net\/problem\/\d+/) !== null)
+    parseProblemDescription();
   else if (currentUrl.includes('.net/user')) {
     getStats().then((stats) => {
       if (!isEmpty(stats.version) && stats.version === getVersion()) {
@@ -39,9 +53,15 @@ function startLoader() {
       const table = findFromResultTable();
       if (isEmpty(table)) return;
       const data = table[0];
-      if (data.hasOwnProperty('username') && data.hasOwnProperty('resultCategory')) {
+      if (
+        // eslint-disable-next-line no-prototype-builtins
+        data.hasOwnProperty('username') && data.hasOwnProperty('resultCategory')
+      ) {
         const { username, resultCategory } = data;
-        if (username === findUsername() && resultCategory.includes(RESULT_CATEGORY.RESULT_ACCEPTED)) {
+        if (
+          username === findUsername() &&
+          resultCategory.includes(RESULT_CATEGORY.RESULT_ACCEPTED)
+        ) {
           stopLoader();
           console.log('풀이가 맞았습니다. 업로드를 시작합니다.');
           startUpload();
@@ -67,15 +87,33 @@ async function beginUpload(bojData) {
 
     const currentVersion = stats.version;
     /* 버전 차이가 발생하거나, 해당 hook에 대한 데이터가 없는 경우 localstorage의 Stats 값을 업데이트하고, version을 최신으로 변경한다 */
-    if (isNull(currentVersion) || currentVersion !== getVersion() || isNull(await getStatsSHAfromPath(hook))) {
+    if (
+      isNull(currentVersion) ||
+      currentVersion !== getVersion() ||
+      isNull(await getStatsSHAfromPath(hook))
+    ) {
       await versionUpdate();
     }
 
     /* 현재 제출하려는 소스코드가 기존 업로드한 내용과 같다면 중지 */
-    if (debug) console.log('local:', await getStatsSHAfromPath(`${hook}/${bojData.directory}/${bojData.fileName}`), 'calcSHA:', calculateBlobSHA(bojData.code));
-    if ((await getStatsSHAfromPath(`${hook}/${bojData.directory}/${bojData.fileName}`)) === calculateBlobSHA(bojData.code)) {
+    if (debug)
+      console.log(
+        'local:',
+        await getStatsSHAfromPath(
+          `${hook}/${bojData.directory}/${bojData.fileName}`,
+        ),
+        'calcSHA:',
+        calculateBlobSHA(bojData.code),
+      );
+    if (
+      (await getStatsSHAfromPath(
+        `${hook}/${bojData.directory}/${bojData.fileName}`,
+      )) === calculateBlobSHA(bojData.code)
+    ) {
       markUploadedCSS();
-      console.log(`현재 제출번호를 업로드한 기록이 있습니다.` /* submissionID ${bojData.submissionId}` */);
+      console.log(
+        `현재 제출번호를 업로드한 기록이 있습니다.` /* submissionID ${bojData.submissionId}` */,
+      );
       return;
     }
     /* 신규 제출 번호라면 새롭게 커밋  */

@@ -1,3 +1,5 @@
+import {levels} from "./variables";
+import {convertSingleCharToDoubleChar} from "../util";
 /*
   문제가 맞았다면 문제 관련 데이터를 파싱하는 함수의 모음입니다.
   모든 해당 파일의 모든 함수는 parseData()를 통해 호출됩니다.
@@ -11,7 +13,7 @@
   - readme : README.md에 작성할 내용
   - code : 소스코드 내용
 */
-async function parseData() {
+export async function parseData() {
   const link = document.querySelector('head > meta[name$=url]').content.replace(/\?.*/g, '').trim();
   const problemId = document.querySelector('div.main > div.lesson-content').getAttribute('data-lesson-id');
   const level = levels[problemId] || 'unrated';
@@ -41,7 +43,8 @@ async function parseData() {
 }
 
 async function makeData(origin) {
-  const { problem_description, problemId, level, result_message, division, language_extension, title, runtime, memory, code } = origin;
+  const { link, problem_description, problemId, level, result_message, division, language_extension, title, runtime, memory, code } = origin;
+  // eslint-disable-next-line no-irregular-whitespace
   const directory = `프로그래머스/${level}/${problemId}. ${convertSingleCharToDoubleChar(title)}`;
   const message = `[${level.replace('lv', 'level ')}] Title: ${title}, Time: ${runtime}, Memory: ${memory} -BaekjoonHub`;
   const fileName = `${convertSingleCharToDoubleChar(title)}.${language_extension}`;

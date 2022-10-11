@@ -55,48 +55,26 @@
   ],
   "content_scripts": [
     {
-      "matches": [
-        "https://github.com/*"
-      ],
-      "js": [
-        "authorize.js"
-      ],
+      "matches": ["https://github.com/*"],
+      "js": ["authorize.js"],
       "run_at": "document_idle"
     },
     {
-      "matches": [
-        "https://www.acmicpc.net/*"
-      ],
-      "css": [
-        "css/baekjoon/inject.css"
-      ],
-      "js": [
-        "baekjoon.js"
-      ],
+      "matches": ["https://www.acmicpc.net/*"],
+      "css": ["css/baekjoon/inject.css"],
+      "js": ["baekjoon.js"],
       "run_at": "document_idle"
     },
     {
-      "matches": [
-        "https://school.programmers.co.kr/*"
-      ],
-      "css": [
-        "css/programmers/inject.css"
-      ],
-      "js": [
-        "programmers.js"
-      ],
+      "matches": ["https://school.programmers.co.kr/*"],
+      "css": ["css/programmers/inject.css"],
+      "js": ["programmers.js"],
       "run_at": "document_idle"
     },
     {
-      "matches": [
-        "https://swexpertacademy.com/*"
-      ],
-      "css": [
-        "css/swexpertacademy/inject.css"
-      ],
-      "js": [
-        "swexpertacademy.js"
-      ],
+      "matches": ["https://swexpertacademy.com/*"],
+      "css": ["css/swexpertacademy/inject.css"],
+      "js": ["swexpertacademy.js"],
       "run_at": "document_idle"
     }
   ]

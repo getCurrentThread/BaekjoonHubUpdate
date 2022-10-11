@@ -1,8 +1,8 @@
 /* state of upload for progress */
-const uploadState = { uploading: false };
+export const uploadState = { uploading: false };
 
 // prettier-ignore
-const languages = {
+export const languages = {
   'c': 'c',
   'c++': 'cpp',
   'python': 'py',

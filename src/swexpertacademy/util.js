@@ -1,7 +1,9 @@
+import {isNull} from "../util"
+import {uploadState} from "./variables"
 /**
  * 로딩 버튼 추가
  */
-function startUpload() {
+ export function startUpload() {
   let elem = document.getElementById('BaekjoonHub_progress_anchor_element');
   if (elem !== undefined) {
     elem = document.createElement('span');
@@ -17,7 +19,7 @@ function startUpload() {
   // start the countdown
   startUploadCountDown();
 }
-function makeSubmitButton(link) {
+export function makeSubmitButton(link) {
   let elem = document.getElementById('BaekjoonHub_submit_button_element');
   if (elem !== undefined) {
     elem = document.createElement('a');
@@ -36,7 +38,7 @@ function makeSubmitButton(link) {
 /**
  * 업로드 완료 아이콘 표시
  */
-function markUploadedCSS() {
+ export function markUploadedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploaded';
@@ -45,7 +47,7 @@ function markUploadedCSS() {
 /**
  * 업로드 실패 아이콘 표시
  */
-function markUploadFailedCSS() {
+ export function markUploadFailedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploadfailed';
@@ -54,7 +56,7 @@ function markUploadFailedCSS() {
 /**
  * 총 실행시간이 10초를 초과한다면 실패로 간주합니다.
  */
-function startUploadCountDown() {
+ export function startUploadCountDown() {
   uploadState.uploading = true;
   uploadState.countdown = setTimeout(() => {
     if (uploadState.uploading === true) {
@@ -65,8 +67,8 @@ function startUploadCountDown() {
 
 /**
  * 로그인한 유저의 닉네임을 가져옵니다.
- * @returns {string} 유저 닉네임이며 없을 시에 null을 반환
+ * @returns {string} 유저 닉네임이며 없을 시에 빈문자열을 반환
  */
-function getNickname() {
+ export function getNickname() {
   return document.querySelector('#Beginner')?.innerText || document.querySelector('header > div > span.name')?.innerText || '';
 }

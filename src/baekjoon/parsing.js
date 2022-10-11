@@ -1,3 +1,11 @@
+import {isNull, filter, isEmpty, combine, convertSingleCharToDoubleChar} from "../util";
+import { updateProblemsFromStats } from "../storage";
+import { unescapeHtml } from "../util";
+import {RESULT_CATEGORY, languages, categories, bj_level, uploadState} from "./variables";
+import {selectBestSubmissionList, convertResultTableHeader, convertImageTagAbsoluteURL, markUploadFailedCSS} from "./util";
+import { getProblemFromStats, getSubmitCodeFromStats, updateSubmitCodeFromStats, getSolvedACFromStats, updateSolvedACFromStats } from "./storage";
+import asyncPool from "tiny-async-pool";
+
 /*
   문제가 맞았다면 문제 관련 데이터를 파싱하는 함수의 모음입니다.
   모든 해당 파일의 모든 함수는 findData()를 통해 호출됩니다.
@@ -13,7 +21,7 @@
   - 파일명: fileName
   - Readme 내용 : readme
 */
-async function findData(data) {
+export async function findData(data) {
   try {
     if (isNull(data)) {
       let table = filter(findFromResultTable(), 'resultCategory', RESULT_CATEGORY.RESULT_ACCEPTED);
@@ -31,7 +39,7 @@ async function findData(data) {
   return null;
 }
 
-async function parseData(doc = document) {
+export async function parseData(doc = document) {
   const table = doc.querySelector('div.table-responsive > table');
   const tbody = table.querySelector('tbody');
   const tr = tbody.querySelector('tr');
@@ -46,7 +54,7 @@ async function parseData(doc = document) {
   const runtime = tr.querySelector('td:nth-child(7)').innerText;
   if (isNaN(Number(problemId)) || Number(problemId) < 1000) {
     throw new Error(`정책상 대회 문제는 업로드 되지 않습니다. 대회 문제가 아니라고 판단된다면 이슈로 남겨주시길 바랍니다.\n문제 ID: ${problemId}`)
-  };
+  }
   const details = await makeDetailMessageAndReadme(problemId, submissionId, language, memory, runtime);
   return { ...details, code };
 }
@@ -56,9 +64,9 @@ async function parseData(doc = document) {
  * @param {Array<Object>} datas
  * @returns {Array<Object>} 
  */
-async function findDatas(datas) {
+ export async function findDatas(datas) {
   datas = datas.filter((data) => !isNaN(Number(data.problemId)) && Number(data.problemId) > 1000); // 대회 문제 제외
-  details = await findProblemsInfoAndSubmissionCode(datas.map(x => x.problemId), datas.map(x => x.submissionId));
+  const details = await findProblemsInfoAndSubmissionCode(datas.map(x => x.problemId), datas.map(x => x.submissionId));
   datas = combine(datas, details);
   return datas.map((data) => {
     const detail = makeDetailMessageAndReadme(data);
@@ -71,11 +79,13 @@ async function findDatas(datas) {
  * @param {Object} data
  * @returns {Object} { directory, fileName, message, readme, code }
  */
-function makeDetailMessageAndReadme(data) {
+ export function makeDetailMessageAndReadme(data) {
+  // eslint-disable-next-line no-unused-vars
   const { problemId, submissionId, title, level, tags,
     problem_description, problem_input, problem_output,
     code, language, memory, runtime } = data;
 
+  // eslint-disable-next-line no-irregular-whitespace
   const directory = `백준/${level.replace(/ .*/, '')}/${problemId}. ${convertSingleCharToDoubleChar(title)}`;
   const message = `[${level}] Title: ${title}, Time: ${runtime} ms, Memory: ${memory} KB -BaekjoonHub`;
   const tagl = [];
@@ -89,7 +99,7 @@ function makeDetailMessageAndReadme(data) {
     + `메모리: ${memory} KB, `
     + `시간: ${runtime} ms\n\n`
     + `### 분류\n\n`
-    + `${category || "Empty"}\n\n` + (!!problem_description ? ''
+    + `${category || "Empty"}\n\n` + (problem_description ? ''
       + `### 문제 설명\n\n${problem_description}\n\n`
       + `### 입력 \n\n ${problem_input}\n\n`
       + `### 출력 \n\n ${problem_output}\n\n` : '');
@@ -106,7 +116,7 @@ function makeDetailMessageAndReadme(data) {
 /*
   현재 로그인된 유저를 파싱합니다.
 */
-function findUsername() {
+export function findUsername() {
   const el = document.querySelector('a.username');
   if (isNull(el)) return null;
   const username = el?.innerText?.trim();
@@ -117,7 +127,7 @@ function findUsername() {
 /*
   유저 정보 페이지에서 유저 이름을 파싱합니다.
 */
-function findUsernameOnUserInfoPage() {
+export function findUsernameOnUserInfoPage() {
   const el = document.querySelector('div.page-header > h1');
   if (isNull(el)) return null;
   const username = el.textContent.trim();
@@ -128,14 +138,14 @@ function findUsernameOnUserInfoPage() {
 /*
   결과 테이블의 존재 여부를 확인합니다.
 */
-function isExistResultTable() {
+export function isExistResultTable() {
   return document.getElementById('status-table') !== null;
 }
 
 /*
   결과 테이블을 파싱하는 함수입니다.
 */
-function parsingResultTableList(doc) {
+export function parsingResultTableList(doc) {
   const table = doc.getElementById('status-table');
   if (table === null || table === undefined || table.length === 0) return [];
   const headers = Array.from(table.rows[0].cells, (x) => convertResultTableHeader(x.innerText.trim()));
@@ -150,10 +160,12 @@ function parsingResultTableList(doc) {
         case 'language':
           return x.innerText.unescapeHtml().replace(/\/.*$/g, '').trim();
         case 'submissionTime':
+          // eslint-disable-next-line no-case-declarations
           const el = x.querySelector('a.show-date');
           if (isNull(el)) return null;
           return el.getAttribute('data-original-title');
         case 'problemId':
+          // eslint-disable-next-line no-case-declarations
           const el2 = x.querySelector('a.problem_title');
           if (isNull(el2)) return null;
           return el2.getAttribute('href').replace(/^.*\/([0-9]+)$/, '$1');
@@ -185,7 +197,7 @@ function parsingResultTableList(doc) {
     - 문제번호: problemId
     - 해당html요소 : element
 */
-function findFromResultTable() {
+export function findFromResultTable() {
   if (!isExistResultTable()) {
     if (debug) console.log('Result table not found');
   }
@@ -205,7 +217,7 @@ function findFromResultTable() {
     - 커밋 메시지: message 
     - 백준 문제 카테고리: category
 */
-function parseProblemDescription(doc = document) {
+export function parseProblemDescription(doc = document) {
   convertImageTagAbsoluteURL(doc.getElementById('problem_description')); //이미지에 상대 경로가 있을 수 있으므로 이미지 경로를 절대 경로로 전환 합니다.
   const problemId = doc.getElementsByTagName('title')[0].textContent.split(':')[0].replace(/[^0-9]/, '');
   const problem_description = unescapeHtml(doc.getElementById('problem_description').innerHTML.trim());
@@ -219,7 +231,7 @@ function parseProblemDescription(doc = document) {
   return {};
 }
 
-async function fetchProblemDescriptionById(problemId) {
+export async function fetchProblemDescriptionById(problemId) {
   return fetch(`https://www.acmicpc.net/problem/${problemId}`)
     .then((res) => res.text())
     .then((html) => {
@@ -228,17 +240,17 @@ async function fetchProblemDescriptionById(problemId) {
     });
 }
 
-async function fetchSubmitCodeById(submissionId) {
+export async function fetchSubmitCodeById(submissionId) {
   return fetch(`https://www.acmicpc.net/source/download/${submissionId}`, { method: 'GET' })
     .then((res) => res.text())
 }
 
-async function fetchSolvedACById(problemId) {
+export async function fetchSolvedACById(problemId) {
   return fetch(`https://solved.ac/api/v3/problem/show?problemId=${problemId}`, { method: 'GET' })
     .then((res) => res.json())
 }
 
-async function getProblemDescriptionById(problemId) {
+export async function getProblemDescriptionById(problemId) {
   let problem = await getProblemFromStats(problemId);
   if (isNull(problem)) {
     problem = await fetchProblemDescriptionById(problemId);
@@ -247,7 +259,7 @@ async function getProblemDescriptionById(problemId) {
   return problem;
 }
 
-async function getSubmitCodeById(submissionId) {
+export async function getSubmitCodeById(submissionId) {
   let code = await getSubmitCodeFromStats(submissionId);
   if (isNull(code)) {
     code = await fetchSubmitCodeById(submissionId);
@@ -256,7 +268,7 @@ async function getSubmitCodeById(submissionId) {
   return code;
 }
 
-async function getSolvedACById(problemId) {
+export async function getSolvedACById(problemId) {
   let jsonData = await getSolvedACFromStats(problemId);
   if (isNull(jsonData)) {
     jsonData = await fetchSolvedACById(problemId);
@@ -265,7 +277,7 @@ async function getSolvedACById(problemId) {
   return jsonData;
 }
 
-async function findProblemInfoAndSubmissionCode(problemId, submissionId) {
+export async function findProblemInfoAndSubmissionCode(problemId, submissionId) {
   if (debug) console.log('in find with promise');
   if (!isNull(problemId) && !isNull(submissionId)) {
     return Promise.all([getProblemDescriptionById(problemId), getSubmitCodeById(submissionId), getSolvedACById(problemId)])
@@ -291,7 +303,7 @@ async function findProblemInfoAndSubmissionCode(problemId, submissionId) {
  * @returns {Promise<Array>} 
  */
 
-async function fetchProblemInfoByIds(problemIds) {
+ export async function fetchProblemInfoByIds(problemIds) {
   const dividedProblemIds = [];
   for (let i = 0; i < problemIds.length; i += 100) {
     dividedProblemIds.push(problemIds.slice(i, i + 100));
@@ -308,7 +320,7 @@ async function fetchProblemInfoByIds(problemIds) {
  * @param {Array} problemIds
  * @returns {Promise<Array>}
  */
-async function fetchProblemDescriptionsByIds(problemIds) {
+ export async function fetchProblemDescriptionsByIds(problemIds) {
   return asyncPool(2, problemIds, async (problemId) => {
     return getProblemDescriptionById(problemId);
   })
@@ -319,7 +331,7 @@ async function fetchProblemDescriptionsByIds(problemIds) {
  * @param {Array} submissionIds
  * @returns {Promise<Array>} 
  */
-async function fetchSubmissionCodeByIds(submissionIds) {
+ export async function fetchSubmissionCodeByIds(submissionIds) {
   return asyncPool(2, submissionIds, async (submissionId) => {
     return getSubmitCodeById(submissionId);
   });
@@ -331,7 +343,7 @@ async function fetchSubmissionCodeByIds(submissionIds) {
  * @param {Array} submissionIds
  * @returns {Promise<Array>} 
  */
-async function findProblemsInfoAndSubmissionCode(problemIds, submissionIds) {
+ export async function findProblemsInfoAndSubmissionCode(problemIds, submissionIds) {
   if (debug) console.log('in find with promise');
   const problemDescriptions = fetchProblemDescriptionsByIds(problemIds);
   const Codes = fetchSubmissionCodeByIds(submissionIds);
@@ -356,7 +368,7 @@ async function findProblemsInfoAndSubmissionCode(problemIds, submissionIds) {
  * @param username: 백준 아이디
  * @return Promise<Array<String>>
  */
-async function findSolvedProblemsList(username) {
+export async function findSolvedProblemsList(username) {
   return fetch(`https://www.acmicpc.net/user/${username}`, { method: 'GET' })
     .then((html) => html.getElementsByClassName('result-ac'))
     .then((collections) => Array.from(collections))
@@ -369,7 +381,7 @@ async function findSolvedProblemsList(username) {
  * @param username: 백준 아이디
  * @return Promise<Array<String>>
  */
-async function findResultTableByProblemIdAndUsername(problemId, username) {
+export async function findResultTableByProblemIdAndUsername(problemId, username) {
   return fetch(`https://www.acmicpc.net/status?from_mine=1&problem_id=${problemId}&user_id=${username}`, { method: 'GET' })
     .then((html) => html.text())
     .then((text) => {
@@ -384,7 +396,7 @@ async function findResultTableByProblemIdAndUsername(problemId, username) {
  * @param username: 백준 아이디
  * @returns Promise<Array<Object>>
  */
-async function findUniqueResultTableListByUsername(username) {
+export async function findUniqueResultTableListByUsername(username) {
   return selectBestSubmissionList(await findResultTableListByUsername(username));
 }
 
@@ -393,7 +405,7 @@ async function findUniqueResultTableListByUsername(username) {
  * @param username: 백준 아이디
  * @return Promise<Array<Object>>
  */
-async function findResultTableListByUsername(username) {
+export async function findResultTableListByUsername(username) {
   const result = [];
   let doc = await findHtmlDocumentByUrl(`https://www.acmicpc.net/status?user_id=${username}&result_id=4`);
   let next_page = doc.getElementById('next_page');
@@ -411,7 +423,7 @@ async function findResultTableListByUsername(username) {
  * @param url: url 주소
  * @returns html document
  */
-async function findHtmlDocumentByUrl(url) {
+export async function findHtmlDocumentByUrl(url) {
   return fetch(url, { method: 'GET' })
     .then((html) => html.text())
     .then((text) => {
