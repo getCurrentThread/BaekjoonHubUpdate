@@ -1,6 +1,12 @@
-import {getToken, getHook, updateObjectDatafromPath, getStats, saveStats} from "../storage";
-import {isNull} from "./util";
-import {GitHub} from "../Github"
+import {
+  getToken,
+  getHook,
+  updateObjectDatafromPath,
+  getStats,
+  saveStats,
+} from '../common/store/storage';
+import { isNull } from './util';
+import { GitHub } from '../common/api/github';
 
 /** 푼 문제들에 대한 단일 업로드는 uploadGit 함수로 합니다.
  * 파라미터는 아래와 같습니다.
@@ -19,7 +25,16 @@ export async function uploadOneSolveProblemOnGit(bojData, cb) {
     console.error('token or hook is null', token, hook);
     return;
   }
-  return upload(token, hook, bojData.code, bojData.readme, bojData.directory, bojData.fileName, bojData.message, cb);
+  return upload(
+    token,
+    hook,
+    bojData.code,
+    bojData.readme,
+    bojData.directory,
+    bojData.fileName,
+    bojData.message,
+    cb,
+  );
 }
 
 /** Github api를 사용하여 업로드를 합니다.
@@ -33,7 +48,16 @@ export async function uploadOneSolveProblemOnGit(bojData, cb) {
  * @param {string} commitMessage - 커밋 메시지
  * @param {function} cb - 콜백 함수 (ex. 업로드 후 로딩 아이콘 처리 등)
  */
-export async function upload(token, hook, sourceText, readmeText, directory, filename, commitMessage, cb) {
+export async function upload(
+  token,
+  hook,
+  sourceText,
+  readmeText,
+  directory,
+  filename,
+  commitMessage,
+  cb,
+) {
   /* 업로드 후 커밋 */
   const git = new GitHub(hook, token);
   const stats = await getStats();
@@ -50,8 +74,16 @@ export async function upload(token, hook, sourceText, readmeText, directory, fil
   await git.updateHead(ref, commitSHA);
 
   /* stats의 값을 갱신합니다. */
-  updateObjectDatafromPath(stats.submission, `${hook}/${source.path}`, source.sha);
-  updateObjectDatafromPath(stats.submission, `${hook}/${readme.path}`, readme.sha);
+  updateObjectDatafromPath(
+    stats.submission,
+    `${hook}/${source.path}`,
+    source.sha,
+  );
+  updateObjectDatafromPath(
+    stats.submission,
+    `${hook}/${readme.path}`,
+    readme.sha,
+  );
   await saveStats(stats);
   // 콜백 함수 실행
   if (typeof cb === 'function') cb();

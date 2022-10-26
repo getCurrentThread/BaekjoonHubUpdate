@@ -1,10 +1,22 @@
-import { isNull, isNotEmpty, calculateBlobSHA } from "./util";
-import {checkEnable} from "./enable";
-import { getStats, saveStats, getHook, getVersion, getStatsSHAfromPath, updateLocalStorageStats } from "./storage";
+import { isNull, isNotEmpty, calculateBlobSHA } from '../common/utils/util';
+import { checkEnable } from '../common/enable';
+import {
+  getStats,
+  saveStats,
+  getHook,
+  getVersion,
+  getStatsSHAfromPath,
+  updateLocalStorageStats,
+} from '../common/store/storage';
 
-import {parseCode, parseData} from "./swexpertacademy/parsing";
-import { getNickname, makeSubmitButton, startUpload, markUploadedCSS } from "./swexpertacademy/util";
-import { uploadOneSolveProblemOnGit } from "./swexpertacademy/uploadfunctions";
+import { parseCode, parseData } from './parsing';
+import {
+  getNickname,
+  makeSubmitButton,
+  startUpload,
+  markUploadedCSS,
+} from './util';
+import { uploadOneSolveProblemOnGit } from './uploadfunctions';
 
 // Set to true to enable console log
 const debug = false;
@@ -18,8 +30,16 @@ let loader;
 const currentUrl = window.location.href;
 
 // SWEA 연습 문제 주소임을 확인하고, 맞는 파서를 실행
-if (currentUrl.includes('/main/solvingProblem/solvingProblem.do') && document.querySelector('header > h1 > span').textContent === '모의 테스트') startLoader();
-else if (currentUrl.includes('/main/code/problem/problemSolver.do') && currentUrl.includes('extension=BaekjoonHub')) parseAndUpload();
+if (
+  currentUrl.includes('/main/solvingProblem/solvingProblem.do') &&
+  document.querySelector('header > h1 > span').textContent === '모의 테스트'
+)
+  startLoader();
+else if (
+  currentUrl.includes('/main/code/problem/problemSolver.do') &&
+  currentUrl.includes('extension=BaekjoonHub')
+)
+  parseAndUpload();
 
 function parseAndUpload() {
   //async wrapper
@@ -54,7 +74,12 @@ function startLoader() {
 }
 
 function getSolvedResult() {
-  return document.querySelector('div.popup_layer.show > div > p.txt')?.innerText.trim().toLowerCase() || '';
+  return (
+    document
+      .querySelector('div.popup_layer.show > div > p.txt')
+      ?.innerText.trim()
+      .toLowerCase() || ''
+  );
 }
 
 function stopLoader() {
@@ -71,15 +96,33 @@ async function beginUpload(bojData) {
 
     const currentVersion = stats.version;
     /* 버전 차이가 발생하거나, 해당 hook에 대한 데이터가 없는 경우 localstorage의 Stats 값을 업데이트하고, version을 최신으로 변경한다 */
-    if (isNull(currentVersion) || currentVersion !== getVersion() || isNull(await getStatsSHAfromPath(hook))) {
+    if (
+      isNull(currentVersion) ||
+      currentVersion !== getVersion() ||
+      isNull(await getStatsSHAfromPath(hook))
+    ) {
       await versionUpdate();
     }
 
     /* 현재 제출하려는 소스코드가 기존 업로드한 내용과 같다면 중지 */
-    if (debug) console.log('local:', await getStatsSHAfromPath(`${hook}/${bojData.directory}/${bojData.fileName}`), 'calcSHA:', calculateBlobSHA(bojData.code));
-    if ((await getStatsSHAfromPath(`${hook}/${bojData.directory}/${bojData.fileName}`)) === calculateBlobSHA(bojData.code)) {
+    if (debug)
+      console.log(
+        'local:',
+        await getStatsSHAfromPath(
+          `${hook}/${bojData.directory}/${bojData.fileName}`,
+        ),
+        'calcSHA:',
+        calculateBlobSHA(bojData.code),
+      );
+    if (
+      (await getStatsSHAfromPath(
+        `${hook}/${bojData.directory}/${bojData.fileName}`,
+      )) === calculateBlobSHA(bojData.code)
+    ) {
       markUploadedCSS();
-      console.log(`현재 제출번호를 업로드한 기록이 있습니다. problemIdID ${bojData.problemId}`);
+      console.log(
+        `현재 제출번호를 업로드한 기록이 있습니다. problemIdID ${bojData.problemId}`,
+      );
       return;
     }
     /* 신규 제출 번호라면 새롭게 커밋  */

@@ -1,10 +1,34 @@
-import { findData, findUsername, parseProblemDescription, findUsernameOnUserInfoPage, isExistResultTable, findFromResultTable } from "./baekjoon/parsing";
-import { insertUploadAllButton, insertDownloadAllButton, markUploadedCSS, startUpload } from "./baekjoon/util";
-import { RESULT_CATEGORY } from "./baekjoon/variables";
-import { uploadOneSolveProblemOnGit } from "./baekjoon/uploadfunctions";
-import { isNull, isEmpty, getVersion, isNotEmpty, calculateBlobSHA, getStatsSHAfromPath } from "./util";
-import { getStats, saveStats, getHook, updateLocalStorageStats } from "./storage";
-import { checkEnable } from "./enable";
+import {
+  findData,
+  findUsername,
+  parseProblemDescription,
+  findUsernameOnUserInfoPage,
+  isExistResultTable,
+  findFromResultTable,
+} from './parsing';
+import {
+  insertUploadAllButton,
+  insertDownloadAllButton,
+  markUploadedCSS,
+  startUpload,
+} from './util';
+import { RESULT_CATEGORY } from './variables';
+import { uploadOneSolveProblemOnGit } from './uploadfunctions';
+import {
+  isNull,
+  isEmpty,
+  getVersion,
+  isNotEmpty,
+  calculateBlobSHA,
+  getStatsSHAfromPath,
+} from '../common/utils/util';
+import {
+  getStats,
+  saveStats,
+  getHook,
+  updateLocalStorageStats,
+} from '../common/store/storage';
+import { checkEnable } from '../common/enable';
 
 // Set to true to enable console log
 const debug = false;
@@ -55,7 +79,8 @@ function startLoader() {
       const data = table[0];
       if (
         // eslint-disable-next-line no-prototype-builtins
-        data.hasOwnProperty('username') && data.hasOwnProperty('resultCategory')
+        data.hasOwnProperty('username') &&
+        data.hasOwnProperty('resultCategory')
       ) {
         const { username, resultCategory } = data;
         if (

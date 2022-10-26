@@ -1,4 +1,3 @@
-import { GitHub } from '../common/api/github';
 import { isNull } from '../common/utils/util';
 import {
   getToken,
@@ -7,6 +6,7 @@ import {
   saveStats,
   getStats,
 } from '../common/store/storage';
+import { GitHub } from '../common/api/github';
 
 /** 푼 문제들에 대한 단일 업로드는 uploadGit 함수로 합니다.
  * 파라미터는 아래와 같습니다.

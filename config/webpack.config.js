@@ -9,11 +9,11 @@ const PATHS = require('./paths');
 const config = (env, argv) =>
   merge(common, {
     entry: {
-      background: PATHS.src + '/background.js',
-      authorize: PATHS.src + '/authorize.js',
-      baekjoon: PATHS.src + '/baekjoon.js',
-      programmers: PATHS.src + '/programmers.js',
-      swexpertacademy:  PATHS.src + '/swexpertacademy.js',
+      background: PATHS.src + '/background/background.js',
+      authorize: PATHS.src + '/authorize/authorize.js',
+      baekjoon: PATHS.src + '/baekjoon/baekjoon.js',
+      programmers: PATHS.src + '/programmers/programmers.js',
+      swexpertacademy: PATHS.src + '/swexpertacademy/swexpertacademy.js',
     },
     devtool: argv.mode === 'production' ? false : 'source-map',
   });

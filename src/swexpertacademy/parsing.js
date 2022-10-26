@@ -1,14 +1,19 @@
-import {isNull, convertSingleCharToDoubleChar} from "../util";
-import {languages} from "./variables";
-import {getNickname} from "./util"
-import {updateProblemData, getProblemData} from "./storage"
+import { isNull, convertSingleCharToDoubleChar } from '../common/utils/util';
+import { languages } from './variables';
+import { getNickname } from './util';
+import { updateProblemData, getProblemData } from './storage';
 
 /**
  * 문제를 정상적으로 풀면 제출한 소스코드를 파싱하고, 로컬스토리지에 저장하는 함수입니다.
  */
 export async function parseCode() {
-  const problemId = document.querySelector('div.problem_box > h3').innerText.replace(/\..*$/, '').trim();
-  const contestProbId = [...document.querySelectorAll('#contestProbId')].slice(-1)[0].value;
+  const problemId = document
+    .querySelector('div.problem_box > h3')
+    .innerText.replace(/\..*$/, '')
+    .trim();
+  const contestProbId = [...document.querySelectorAll('#contestProbId')].slice(
+    -1,
+  )[0].value;
   updateTextSourceEvent();
   const code = document.querySelector('#textSource').value;
   await updateProblemData(problemId, { code, contestProbId });
@@ -35,7 +40,12 @@ export function updateTextSourceEvent() {
 export async function parseData() {
   const nickname = document.querySelector('#searchinput').value;
 
-  if (debug) console.log('사용자 로그인 정보 및 유무 체크', nickname, document.querySelector('#problemForm div.info'));
+  if (debug)
+    console.log(
+      '사용자 로그인 정보 및 유무 체크',
+      nickname,
+      document.querySelector('#problemForm div.info'),
+    );
   // 검색하는 유저 정보와 로그인한 유저의 닉네임이 같은지 체크
   // PASS를 맞은 기록 유무 체크
   if (getNickname() !== nickname) return;
@@ -50,19 +60,45 @@ export async function parseData() {
     .substr(1)
     .trim();
   // 레벨
-  const level = document.querySelector('div.problem_box > p.problem_title > span.badge')?.textContent || 'Unrated';
+  const level =
+    document.querySelector('div.problem_box > p.problem_title > span.badge')
+      ?.textContent || 'Unrated';
   // 문제번호
-  const problemId = document.querySelector('body > div.container > div.container.sub > div > div.problem_box > p').innerText.split('.')[0].trim();
+  const problemId = document
+    .querySelector(
+      'body > div.container > div.container.sub > div > div.problem_box > p',
+    )
+    .innerText.split('.')[0]
+    .trim();
   // 문제 콘테스트 인덱스
-  const contestProbId = [...document.querySelectorAll('#contestProbId')].slice(-1)[0].value;
+  const contestProbId = [...document.querySelectorAll('#contestProbId')].slice(
+    -1,
+  )[0].value;
   // 문제 링크
   const link = `${window.location.origin}/main/code/problem/problemDetail.do?contestProbId=${contestProbId}`;
 
   // 문제 언어, 메모리, 시간소요
-  const language = document.querySelector('#problemForm div.info > ul > li:nth-child(1) > span:nth-child(1)').textContent.trim();
-  const memory = document.querySelector('#problemForm div.info > ul > li:nth-child(2) > span:nth-child(1)').textContent.trim().toUpperCase();
-  const runtime = document.querySelector('#problemForm div.info > ul > li:nth-child(3) > span:nth-child(1)').textContent.trim();
-  const length = document.querySelector('#problemForm div.info > ul > li:nth-child(4) > span:nth-child(1)').textContent.trim();
+  const language = document
+    .querySelector(
+      '#problemForm div.info > ul > li:nth-child(1) > span:nth-child(1)',
+    )
+    .textContent.trim();
+  const memory = document
+    .querySelector(
+      '#problemForm div.info > ul > li:nth-child(2) > span:nth-child(1)',
+    )
+    .textContent.trim()
+    .toUpperCase();
+  const runtime = document
+    .querySelector(
+      '#problemForm div.info > ul > li:nth-child(3) > span:nth-child(1)',
+    )
+    .textContent.trim();
+  const length = document
+    .querySelector(
+      '#problemForm div.info > ul > li:nth-child(4) > span:nth-child(1)',
+    )
+    .textContent.trim();
 
   // 확장자명
   const extension = languages[language.toLowerCase()];
@@ -81,13 +117,35 @@ export async function parseData() {
   const code = data.code;
   if (debug) console.log('파싱 완료');
   // eslint-disable-next-line consistent-return
-  return makeData({ link, problemId, level, title, extension, code, runtime, memory, length });
+  return makeData({
+    link,
+    problemId,
+    level,
+    title,
+    extension,
+    code,
+    runtime,
+    memory,
+    length,
+  });
 }
 
 export async function makeData(origin) {
-  const { link, problemId, level, extension, title, runtime, memory, code, length } = origin;
+  const {
+    link,
+    problemId,
+    level,
+    extension,
+    title,
+    runtime,
+    memory,
+    code,
+    length,
+  } = origin;
   // eslint-disable-next-line no-irregular-whitespace
-  const directory = `SWEA/${level}/${problemId}. ${convertSingleCharToDoubleChar(title)}`;
+  const directory = `SWEA/${level}/${problemId}. ${convertSingleCharToDoubleChar(
+    title,
+  )}`;
   const message = `[${level}] Title: ${title}, Time: ${runtime}, Memory: ${memory} -BaekjoonHub`;
   const fileName = `${convertSingleCharToDoubleChar(title)}.${extension}`;
   // prettier-ignore

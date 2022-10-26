@@ -1,5 +1,8 @@
-import { isNull } from "../util";
-import {getObjectFromLocalStorage, saveObjectInLocalStorage} from "../storage"
+import { isNull } from '../common/utils/util';
+import {
+  getObjectFromLocalStorage,
+  saveObjectInLocalStorage,
+} from '../common/store/storage';
 
 /*
     로컬스토리지에 swea 객체가 없는 경우 생성

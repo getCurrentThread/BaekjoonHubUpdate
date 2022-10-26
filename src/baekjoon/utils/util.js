@@ -1,60 +1,10 @@
-import { isNull, maxValuesGroupBykey,  } from "../util";
-import { uploadState,multiloader } from "./variables";
-import { downloadAllSolvedProblem, uploadAllSolvedProblem } from "./uploadfunctions"
-/**
- * 로딩 버튼 추가
- */
- export function startUpload() {
-  let elem = document.getElementById('BaekjoonHub_progress_anchor_element');
-  if (elem !== undefined) {
-    elem = document.createElement('span');
-    elem.id = 'BaekjoonHub_progress_anchor_element';
-    elem.className = 'runcode-wrapper__8rXm';
-    elem.style = 'margin-left: 10px;padding-top: 0px;';
-  }
-  elem.innerHTML = `<div id="BaekjoonHub_progress_elem" class="BaekjoonHub_progress"></div>`;
-  const target = document.getElementById('status-table')?.childNodes[1].childNodes[0].childNodes[3] || document.querySelector('div.table-responsive > table > tbody > tr > td:nth-child(5)');
-  target.append(elem);
-  if (target.childNodes.length > 0) {
-    target.childNodes[0].append(elem);
-  }
-  startUploadCountDown();
-}
-
-/**
- * 업로드 완료 아이콘 표시
- */
- export function markUploadedCSS() {
-  uploadState.uploading = false;
-  const elem = document.getElementById('BaekjoonHub_progress_elem');
-  elem.className = 'markuploaded';
-  // 1초후 창 닫기
-  // setTimeout(() => {
-  //   window.close();
-  // }, 1000);
-}
-
-/**
- * 업로드 실패 아이콘 표시
- */
- export function markUploadFailedCSS() {
-  uploadState.uploading = false;
-  const elem = document.getElementById('BaekjoonHub_progress_elem');
-  elem.className = 'markuploadfailed';
-}
-
-/**
- * 총 실행시간이 10초를 초과한다면 실패로 간주합니다.
- */
- export function startUploadCountDown() {
-  uploadState.uploading = true;
-  uploadState.countdown = setTimeout(() => {
-    if (uploadState.uploading === true) {
-      markUploadFailedCSS();
-    }
-  }, 10000);
-}
-
+import Base from '../common/utils/util';
+import { uploadState, multiloader } from './variables';
+import {
+  downloadAllSolvedProblem,
+  uploadAllSolvedProblem,
+} from './uploadfunctions';
+class Util extends Base{
 /**
  * 제출 목록 비교함수입니다
  * @param {object} a - 제출 요소 피연산자 a
@@ -65,17 +15,16 @@ import { downloadAllSolvedProblem, uploadAllSolvedProblem } from "./uploadfuncti
  * 3. 코드길이(codeLength)의 차이가 있을 경우 그 차이 값을 반환합니다.
  * 4. 위의 요소가 모두 같은 경우 제출한 요소(submissionId)의 그 차이 값의 역을 반환합니다.
  * */
- export function compareSubmission(a, b) {
+static compareSubmission(a, b) {
   // prettier-ignore-start
   /* eslint-disable */
   return a.runtime === b.runtime
-          ? a.memory === b.memory
-            ? a.codeLength === b.codeLength
-              ? -(a.submissionId - b.submissionId)
-              : a.codeLength - b.codeLength
-            : a.memory - b.memory
-          : a.runtime - b.runtime
-  ;
+    ? a.memory === b.memory
+      ? a.codeLength === b.codeLength
+        ? -(a.submissionId - b.submissionId)
+        : a.codeLength - b.codeLength
+      : a.memory - b.memory
+    : a.runtime - b.runtime;
   /* eslint-enable */
   // prettier-ignore-end
 }
@@ -85,9 +34,13 @@ import { downloadAllSolvedProblem, uploadAllSolvedProblem } from "./uploadfuncti
  * @param {array} submissions - 제출 목록 배열
  * @returns {array} - 목록 중 문제별로 최고의 성능 제출 내역을 담은 배열
  */
- export function selectBestSubmissionList(submissions) {
+static selectBestSubmissionList(submissions) {
   if (isNull(submissions) || submissions.length === 0) return [];
-  return maxValuesGroupBykey(submissions, 'problemId', (a, b) => -compareSubmission(a, b));
+  return maxValuesGroupBykey(
+    submissions,
+    'problemId',
+    (a, b) => -compareSubmission(a, b),
+  );
 }
 
 export function convertResultTableHeader(header) {
@@ -120,15 +73,80 @@ export function convertResultTableHeader(header) {
       return 'unknown';
   }
 }
+/**
+ * 로딩 버튼 추가
+ */
+export function startUpload() {
+  let elem = document.getElementById('BaekjoonHub_progress_anchor_element');
+  if (elem !== undefined) {
+    elem = document.createElement('span');
+    elem.id = 'BaekjoonHub_progress_anchor_element';
+    elem.className = 'runcode-wrapper__8rXm';
+    elem.style = 'margin-left: 10px;padding-top: 0px;';
+  }
+  elem.innerHTML = `<div id="BaekjoonHub_progress_elem" class="BaekjoonHub_progress"></div>`;
+  const target =
+    document.getElementById('status-table')?.childNodes[1].childNodes[0]
+      .childNodes[3] ||
+    document.querySelector(
+      'div.table-responsive > table > tbody > tr > td:nth-child(5)',
+    );
+  target.append(elem);
+  if (target.childNodes.length > 0) {
+    target.childNodes[0].append(elem);
+  }
+  startUploadCountDown();
+}
+
+/**
+ * 업로드 완료 아이콘 표시
+ */
+export function markUploadedCSS() {
+  uploadState.uploading = false;
+  const elem = document.getElementById('BaekjoonHub_progress_elem');
+  elem.className = 'markuploaded';
+  // 1초후 창 닫기
+  // setTimeout(() => {
+  //   window.close();
+  // }, 1000);
+}
+
+/**
+ * 업로드 실패 아이콘 표시
+ */
+export function markUploadFailedCSS() {
+  uploadState.uploading = false;
+  const elem = document.getElementById('BaekjoonHub_progress_elem');
+  elem.className = 'markuploadfailed';
+}
+
+/**
+ * 총 실행시간이 10초를 초과한다면 실패로 간주합니다.
+ */
+export function startUploadCountDown() {
+  uploadState.uploading = true;
+  uploadState.countdown = setTimeout(() => {
+    if (uploadState.uploading === true) {
+      markUploadFailedCSS();
+    }
+  }, 10000);
+}
+
+
 
 export function insertUploadAllButton() {
   const profileNav = document.getElementsByClassName('nav-tabs')[0];
   if (debug) console.log('profileNav', profileNav);
   const uploadButton = document.createElement('li');
-  uploadButton.innerHTML = '<a class="BJH_button" style="display:inline-table;"  title="지금까지 백준에 제출한 문제와 코드를 깃허브에 업로드할 수 있습니다.">전체제출 업로드</a>';
+  uploadButton.innerHTML =
+    '<a class="BJH_button" style="display:inline-table;"  title="지금까지 백준에 제출한 문제와 코드를 깃허브에 업로드할 수 있습니다.">전체제출 업로드</a>';
   profileNav.append(uploadButton);
   uploadButton.onclick = () => {
-    if (confirm('현재까지 해결한 모든 문제가 업로드됩니다.\n실행 전에 사용 설명서를 참고하시는 것을 추천드립니다.\n\n진행하시겠습니까?')) {
+    if (
+      confirm(
+        '현재까지 해결한 모든 문제가 업로드됩니다.\n실행 전에 사용 설명서를 참고하시는 것을 추천드립니다.\n\n진행하시겠습니까?',
+      )
+    ) {
       uploadButton.append(insertMultiLoader());
       uploadAllSolvedProblem();
     }
@@ -142,10 +160,15 @@ export function insertDownloadAllButton() {
   const profileNav = document.getElementsByClassName('nav-tabs')[0];
   if (debug) console.log('profileNav', profileNav);
   const downloadButton = document.createElement('li');
-  downloadButton.innerHTML = '<a class="BJH_button" style="display:inline-table;" title="지금까지 백준에 제출한 문제와 코드를 압축하여 다운로드 받을 수 있습니다.">전체압축 다운로드</a>';
+  downloadButton.innerHTML =
+    '<a class="BJH_button" style="display:inline-table;" title="지금까지 백준에 제출한 문제와 코드를 압축하여 다운로드 받을 수 있습니다.">전체압축 다운로드</a>';
   profileNav.append(downloadButton);
   downloadButton.onclick = () => {
-    if (confirm('현재까지 해결한 모든 문제가 다운로드 됩니다.\n\n진행하시겠습니까?')) {
+    if (
+      confirm(
+        '현재까지 해결한 모든 문제가 다운로드 됩니다.\n\n진행하시겠습니까?',
+      )
+    ) {
       downloadButton.append(insertMultiLoader());
       downloadAllSolvedProblem();
     }
@@ -187,7 +210,7 @@ export function MultiloaderUpToDate() {
 }
 
 export function convertImageTagAbsoluteURL(doc = document) {
-  if(isNull(doc)) return;
+  if (isNull(doc)) return;
   // img tag replace Relative URL to Absolute URL.
   Array.from(doc.getElementsByTagName('img'), (x) => {
     x.setAttribute('src', x.currentSrc);

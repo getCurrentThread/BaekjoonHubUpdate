@@ -1,9 +1,20 @@
-import { isNull, isNotEmpty, getVersion, calculateBlobSHA } from "./util";
-import { getStats, getHook, saveStats, getStatsSHAfromPath, updateLocalStorageStats } from "./storage";
-import { parseData } from "./programmers/parsing";
-import { startUpload, markUploadedCSS } from "./programmers/util";
-import { uploadOneSolveProblemOnGit } from "./programmers/uploadfunctions";
-import { checkEnable } from "./enable";
+import {
+  isNull,
+  isNotEmpty,
+  getVersion,
+  calculateBlobSHA,
+} from '../common/utils/util';
+import {
+  getStats,
+  getHook,
+  saveStats,
+  getStatsSHAfromPath,
+  updateLocalStorageStats,
+} from '../common/store/storage';
+import { parseData } from './parsing';
+import { startUpload, markUploadedCSS } from './util';
+import { uploadOneSolveProblemOnGit } from './uploadfunctions';
+import { checkEnable } from '../common/enable';
 // Set to true to enable console log
 const debug = false;
 
@@ -16,7 +27,8 @@ let loader;
 const currentUrl = window.location.href;
 
 // 프로그래머스 연습 문제 주소임을 확인하고, 맞다면 로더를 실행
-if (currentUrl.includes('/learn/courses/30') && currentUrl.includes('lessons')) startLoader();
+if (currentUrl.includes('/learn/courses/30') && currentUrl.includes('lessons'))
+  startLoader();
 
 function startLoader() {
   loader = setInterval(async () => {
@@ -58,15 +70,33 @@ async function beginUpload(bojData) {
 
     const currentVersion = stats.version;
     /* 버전 차이가 발생하거나, 해당 hook에 대한 데이터가 없는 경우 localstorage의 Stats 값을 업데이트하고, version을 최신으로 변경한다 */
-    if (isNull(currentVersion) || currentVersion !== getVersion() || isNull(await getStatsSHAfromPath(hook))) {
+    if (
+      isNull(currentVersion) ||
+      currentVersion !== getVersion() ||
+      isNull(await getStatsSHAfromPath(hook))
+    ) {
       await versionUpdate();
     }
 
     /* 현재 제출하려는 소스코드가 기존 업로드한 내용과 같다면 중지 */
-    if (debug) console.log('local:', await getStatsSHAfromPath(`${hook}/${bojData.directory}/${bojData.fileName}`), 'calcSHA:', calculateBlobSHA(bojData.code));
-    if ((await getStatsSHAfromPath(`${hook}/${bojData.directory}/${bojData.fileName}`)) === calculateBlobSHA(bojData.code)) {
+    if (debug)
+      console.log(
+        'local:',
+        await getStatsSHAfromPath(
+          `${hook}/${bojData.directory}/${bojData.fileName}`,
+        ),
+        'calcSHA:',
+        calculateBlobSHA(bojData.code),
+      );
+    if (
+      (await getStatsSHAfromPath(
+        `${hook}/${bojData.directory}/${bojData.fileName}`,
+      )) === calculateBlobSHA(bojData.code)
+    ) {
       markUploadedCSS();
-      console.log(`현재 제출번호를 업로드한 기록이 있습니다. problemIdID ${bojData.problemId}`);
+      console.log(
+        `현재 제출번호를 업로드한 기록이 있습니다. problemIdID ${bojData.problemId}`,
+      );
       return;
     }
     /* 신규 제출 번호라면 새롭게 커밋  */

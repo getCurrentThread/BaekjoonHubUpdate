@@ -1,5 +1,5 @@
-import { uploadState } from "./variables";
-import { isNull } from "../util";
+import { uploadState } from './variables';
+import { isNull } from '../common/utils/util';
 /**
  * 로딩 버튼 추가
  */
@@ -12,7 +12,9 @@ export function startUpload() {
     elem.style = 'margin-left: 10px;padding-top: 0px;';
   }
   elem.innerHTML = `<div id="BaekjoonHub_progress_elem" class="BaekjoonHub_progress"></div>`;
-  const target = document.querySelector('#modal-dialog > div.modal-dialog > div.modal-content > div.modal-footer');
+  const target = document.querySelector(
+    '#modal-dialog > div.modal-dialog > div.modal-content > div.modal-footer',
+  );
   if (!isNull(target)) {
     target.prepend(elem);
   }
@@ -23,7 +25,7 @@ export function startUpload() {
 /**
  * 업로드 완료 아이콘 표시
  */
- export function markUploadedCSS() {
+export function markUploadedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploaded';
@@ -32,7 +34,7 @@ export function startUpload() {
 /**
  * 업로드 실패 아이콘 표시
  */
- export function markUploadFailedCSS() {
+export function markUploadFailedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploadfailed';
@@ -41,7 +43,7 @@ export function startUpload() {
 /**
  * 총 실행시간이 10초를 초과한다면 실패로 간주합니다.
  */
- export function startUploadCountDown() {
+export function startUploadCountDown() {
   uploadState.uploading = true;
   uploadState.countdown = setTimeout(() => {
     if (uploadState.uploading === true) {

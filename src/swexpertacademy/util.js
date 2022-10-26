@@ -1,9 +1,9 @@
-import {isNull} from "../util"
-import {uploadState} from "./variables"
+import { isNull } from '../common/utils/util';
+import { uploadState } from './variables';
 /**
  * 로딩 버튼 추가
  */
- export function startUpload() {
+export function startUpload() {
   let elem = document.getElementById('BaekjoonHub_progress_anchor_element');
   if (elem !== undefined) {
     elem = document.createElement('span');
@@ -12,7 +12,9 @@ import {uploadState} from "./variables"
     // elem.style = 'margin-left: 10px;padding-top: 0px;';
   }
   elem.innerHTML = `<div id="BaekjoonHub_progress_elem" class="BaekjoonHub_progress"></div>`;
-  const target = document.querySelector('div.box-list > div.box-list-inner > div.right_answer > span.btn_right');
+  const target = document.querySelector(
+    'div.box-list > div.box-list-inner > div.right_answer > span.btn_right',
+  );
   if (!isNull(target)) {
     target.prepend(elem);
   }
@@ -29,7 +31,9 @@ export function makeSubmitButton(link) {
     elem.href = link;
   }
   elem.innerHTML = '백준허브로 업로드';
-  const target = document.querySelector('body > div.popup_layer.show > div > div');
+  const target = document.querySelector(
+    'body > div.popup_layer.show > div > div',
+  );
   if (!isNull(target)) {
     target.append(elem);
   }
@@ -38,7 +42,7 @@ export function makeSubmitButton(link) {
 /**
  * 업로드 완료 아이콘 표시
  */
- export function markUploadedCSS() {
+export function markUploadedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploaded';
@@ -47,7 +51,7 @@ export function makeSubmitButton(link) {
 /**
  * 업로드 실패 아이콘 표시
  */
- export function markUploadFailedCSS() {
+export function markUploadFailedCSS() {
   uploadState.uploading = false;
   const elem = document.getElementById('BaekjoonHub_progress_elem');
   elem.className = 'markuploadfailed';
@@ -56,7 +60,7 @@ export function makeSubmitButton(link) {
 /**
  * 총 실행시간이 10초를 초과한다면 실패로 간주합니다.
  */
- export function startUploadCountDown() {
+export function startUploadCountDown() {
   uploadState.uploading = true;
   uploadState.countdown = setTimeout(() => {
     if (uploadState.uploading === true) {
@@ -69,6 +73,10 @@ export function makeSubmitButton(link) {
  * 로그인한 유저의 닉네임을 가져옵니다.
  * @returns {string} 유저 닉네임이며 없을 시에 빈문자열을 반환
  */
- export function getNickname() {
-  return document.querySelector('#Beginner')?.innerText || document.querySelector('header > div > span.name')?.innerText || '';
+export function getNickname() {
+  return (
+    document.querySelector('#Beginner')?.innerText ||
+    document.querySelector('header > div > span.name')?.innerText ||
+    ''
+  );
 }

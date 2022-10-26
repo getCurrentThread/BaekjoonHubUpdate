@@ -1,8 +1,8 @@
-import { isNull } from "../util";
-import { getStats, saveStats } from "../storage";
+import Util from '../utils/util';
+import BaseStorage from './storage';
 
 /* eslint-disable no-unused-vars */
-class TTLCacheStats {
+export class TTLCacheStats {
   constructor(name) {
     this.name = name;
     this.stats = null;
@@ -10,8 +10,8 @@ class TTLCacheStats {
   }
 
   async forceLoad() {
-    this.stats = await getStats();
-    if (isNull(this.stats[this.name])) {
+    this.stats = await BaseStorage.getStats();
+    if (Util.isNull(this.stats[this.name])) {
       this.stats[this.name] = {};
     }
   }
@@ -32,7 +32,7 @@ class TTLCacheStats {
       console.log('Saving stats...', clone);
       await this.forceLoad(); // 최신화
       this.stats[this.name] = clone; // 업데이트
-      await saveStats(this.stats);
+      await BaseStorage.saveStats(this.stats);
       this.saveTimer = null;
     }, 1000);
   }
@@ -42,7 +42,11 @@ class TTLCacheStats {
     if (!this.stats[this.name].last_check_date) {
       this.stats[this.name].last_check_date = Date.now();
       this.save(this.stats);
-      if (debug) console.log('Initialized stats date', this.stats[this.name].last_check_date);
+      if (debug)
+        console.log(
+          'Initialized stats date',
+          this.stats[this.name].last_check_date,
+        );
       return;
     }
 
@@ -90,46 +94,4 @@ class TTLCacheStats {
     if (isNull(cur)) return null;
     return cur[id];
   }
-}
-
-export const problemCache = new TTLCacheStats('problem');
-export const submitCodeCache = new TTLCacheStats('scode');
-export const SolvedACCache = new TTLCacheStats('solvedac');
-
-export async function updateProblemsFromStats(problem) {
-  const data = {
-    id: problem.problemId,
-    problem_description: problem.problem_description,
-    problem_input: problem.problem_input,
-    problem_output: problem.problem_output,
-  };
-  await problemCache.update(data);
-}
-
-export async function getProblemFromStats(problemId) {
-  return problemCache.get(problemId);
-}
-
-export async function updateSubmitCodeFromStats(obj) {
-  const data = {
-    id: obj.submissionId,
-    data: obj.code,
-  };
-  await submitCodeCache.update(data);
-}
-
-export async function getSubmitCodeFromStats(submissionId) {
-  return submitCodeCache.get(submissionId).then((x) => x?.data);
-}
-
-export async function updateSolvedACFromStats(obj) {
-  const data = {
-    id: obj.problemId,
-    data: obj.jsonData,
-  };
-  await SolvedACCache.update(data);
-}
-
-export async function getSolvedACFromStats(problemId) {
-  return SolvedACCache.get(problemId).then((x) => x?.data);
 }
